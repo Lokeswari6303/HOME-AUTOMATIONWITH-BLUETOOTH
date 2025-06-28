@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temperature and Moisture Monitor</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Simulated Sensor Monitor</h2>
+  <p><strong>Temperature:</strong> <span id="tempVal">--</span> °C</p>
+  <p><strong>Moisture:</strong> <span id="moistVal">--</span></p>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+  <script>
+    let tempData = [];
+    let moistData = [];
+    let maxPoints = 100;
+
+    function setup() {
+      createCanvas(windowWidth - 40, 400);
+      frameRate(10); // simulate 10 samples per second
+    }
+
+    function draw() {
+      background(255);
+
+      // Simulate temperature: 28 ± 2°C
+      let temp = 28 + sin(frameCount * 0.1) * 2;
+      // Simulate moisture: 600 ± 100
+      let moist = 600 + cos(frameCount * 0.1) * 100;
+
+      // Update values on screen
+      document.getElementById("tempVal").textContent = temp.toFixed(2);
+      document.getElementById("moistVal").textContent = moist.toFixed(0);
+
+      // Store values
+      tempData.push(temp);
+      moistData.push(moist);
+
+      if (tempData.length > maxPoints) tempData.shift();
+      if (moistData.length > maxPoints) moistData.shift();
+
+      // Draw temperature graph
+      stroke(255, 0, 0);
+      noFill();
+      beginShape();
+      for (let i = 0; i < tempData.length; i++) {
+        let x = map(i, 0, maxPoints, 0, width);
+        let y = map(tempData[i], 20, 35, height / 2, 0);
+        vertex(x, y);
+      }
+      endShape();
+      fill(255, 0, 0);
+      text("Temperature (°C)", 10, 20);
+
+      // Draw moisture graph
+      stroke(0, 100, 255);
+      noFill();
+      beginShape();
+      for (let i = 0; i < moistData.length; i++) {
+        let x = map(i, 0, maxPoints, 0, width);
+        let y = map(moistData[i], 300, 800, height, height / 2);
+        vertex(x, y);
+      }
+      endShape();
+      fill(0, 100, 255);
+      text("Moisture (Analog)", 10, height / 2 + 20);
+    }
+  </script>
+</body>
+</html>
